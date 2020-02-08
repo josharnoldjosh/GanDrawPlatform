@@ -11,12 +11,13 @@ from add_text import *
 """
 TO DO ASAP:
 - LIMIT # of peeks
-- limit teller words they can say
-- Put server on language so others can access
+- limit teller & drawer words they can say
+- Fix the order of messages that are displayed
+- minimum # of turns?
+
 - TEST hypothesis
 
 - minimum turns: 5
-
 - add button to end game
 - after ending game, show score and images to both teller and drawer, then allow them to reconnect
 
@@ -30,10 +31,8 @@ class GM:
 
     def peek(self, game_id):
         for i in range(int(self.current_turn(game_id)), -1, -1):
-            path = 'data/' + game_id + '/synthetic_' + str(i) + '.jpg'
-            print(path)
-            if os.path.isfile(path):
-                print("file exists!")
+            path = 'data/' + game_id + '/synthetic_' + str(i) + '.jpg'            
+            if os.path.isfile(path):                
                 im = Image.open(path)
                 imgByteArr = io.BytesIO()
                 im.save(imgByteArr, format='JPEG')  

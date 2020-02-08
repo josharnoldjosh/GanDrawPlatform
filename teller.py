@@ -15,7 +15,7 @@ socketio = SocketIO(app)
 
 # Socket to server
 sio = sio_class.Client()
-sio.connect('http://localhost:3000')
+sio.connect('https://language.cs.ucdavis.edu/')
 
 @sio.on('send_peek_to_client')
 def send_peek_to_client(data):
@@ -33,22 +33,22 @@ def update_text(data):
 def become_active(data):
     global is_active_user
     if data['active'] == True:
-        print('user is becoming active')
+        # print('user is becoming active')
         is_active_user = True        
         with app.test_request_context(): socketio.emit('toggle_active', {'active':is_active_user})
     else:
-        print('user is disabled')
+        # print('user is disabled')
         is_active_user = False
         with app.test_request_context(): socketio.emit('toggle_active', {'active':is_active_user})
 
 @sio.on('paired')
 def my_event(data):
-    print("request to pair!")
+    # print("request to pair!")
     global session_room
     session_room = data['room']
     with app.test_request_context():    
         socketio.emit('redirect', {'path':'game'})
-        print('emitted signal')
+        # print('emitted signal')
 
 @sio.on('send_target_image_to_client')
 def send_target_image_to_client(data):        
@@ -88,7 +88,7 @@ def get_active_status(data):
 @socketio.on('joined')
 def connect_drawer_with_teller(data):
     global session_room   
-    print('session', session_room) 
+    # print('session', session_room) 
     if session_room != "":
         emit('redirect', {'path':'game'})
     else:
@@ -116,7 +116,7 @@ def game():
 @app.route('/')
 def index():
     global session_room    
-    print('session', session_room)
+    # print('session', session_room)
     if session_room != "":
         socketio.emit('redirect', {'path':'game'})
     else:

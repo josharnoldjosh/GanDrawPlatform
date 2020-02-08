@@ -55,29 +55,27 @@ def send_message(data):
 
 @socketio.on('connect')
 def connect_users():
-    print("User connected to socket.")
+    pass
 
 @socketio.on('pair_users')
 def pair_users(data):
     global tellers
     global drawers
 
-    print(data["user_type"], request.sid)
-
     if data["user_type"] == "drawer": drawers.add(request.sid)
     else: tellers.add(request.sid)
 
-    print(len(drawers), len(tellers))
+    # print(len(drawers), len(tellers))
 
     # if we have enough to make a pair, we make a pair
     if len(drawers) > 0 and len(tellers) > 0:
-        print("Starting new game...")        
+        # print("Starting new game...")        
         # select target image
         # map room to requests to return info
         drawer = drawers.pop()
         teller = tellers.pop()
-        print(len(drawers), len(tellers))
-        print(drawer, teller)
+        # print(len(drawers), len(tellers))
+        # print(drawer, teller)
         new_room = str(uuid4())[:8]  
         global user_map
         user_map[new_room] = {'drawer':drawer, 'teller':teller}
