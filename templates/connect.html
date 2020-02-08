@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Finding game...</title>        
+
+        <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/button.css') }}"> -->
+  </head>
+
+  <body>
+    <!-- This file is only for testing purpose -->
+    <div style="display: flex; justify-content: center;">
+        <p style="font-family: Helvetica, Sans-Serif;">Waiting to connect...</p>
+    </div>
+
+  </body>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+  <!-- <script type="text/javascript" src="{{ url_for('static',filename='js/canvas-free-drawing.js') }}"></script> -->
+  <!-- <script type="text/javascript" src="{{ url_for('static',filename='js/logic.js') }}"></script> -->
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+  <script type="text/javascript">
+
+    var socket;
+
+    $(document).ready(function() {
+        socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function() {
+            socket.emit('joined', {'user':'drawer'}); // send message back
+        });          
+
+        socket.on('redirect', function(data) {
+            // console.log("redirect received!");
+            // alert("Redirect!!");
+            window.location = data['path'];
+        });                
+    });
+  </script>
+
+</html>
