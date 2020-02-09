@@ -19,7 +19,7 @@ user_map = {}
 @app.route('/')
 def root():
     """ Send HTML from the server."""
-    return "hello world"
+    return "Hello, from the server for the GanDraw task."
     # return render_template('index.html')
 
 @socketio.on('peek')
