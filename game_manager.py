@@ -7,27 +7,47 @@ from shutil import copyfile
 import base64
 import cv2
 from add_text import *
+import re
+from dataclasses import dataclass
 
 """
 TO DO ASAP:
-- LIMIT # of peeks
 - limit teller & drawer words they can say
 - Fix the order of messages that are displayed
-- minimum # of turns?
 
 - TEST hypothesis
 
-- minimum turns: 5
-- add button to end game
-- after ending game, show score and images to both teller and drawer, then allow them to reconnect
+- minimum turns: 5 // can always be told explicity to data collectors
+- add button to end game // they can always tell each other to start a new game
+- score // can be calcualted lated? can manually check quality of images, as long as semantic labels are correct
+- after ending game, show score and images to both teller and drawer, then allow them to reconnect // can be added later
 
 DRAWER MUST DRAW AN IMAGE AT EVERY TURN TO THE BEST OF HIS ABILITY. Even IF HE ASKS A QUESTION FOR CLARIFICATION.
 """
 
+@dataclass
 class GM:
 
-    def __init__(self):
-        pass
+    num_peeks:int
+
+    def num_peeks_left(self, game_id):
+        peeks = [x for x in os.listdir('data/'+game_id+'/') if "peek" in x]
+        return len(peeks)
+
+    def extract_int_from_path(self, path):
+        try:
+            result = re.findall(r'\d+', path)
+            return int(result[0])
+        except:
+            return 0
+
+    def use_one_peek(self, game_id):
+        try:
+            paths = [x for x in os.listdir('data/'+game_id+'/') if "peek" in x]
+            to_del = sorted(paths, key=lambda x: self.extract_int_from_path(x), reverse=True)
+            os.remove('data/'+game_id+'/'+to_del[0])
+        except Exception as error:            
+            print(error) 
 
     def peek(self, game_id):
         for i in range(int(self.current_turn(game_id)), -1, -1):
@@ -35,7 +55,8 @@ class GM:
             if os.path.isfile(path):                
                 im = Image.open(path)
                 imgByteArr = io.BytesIO()
-                im.save(imgByteArr, format='JPEG')  
+                im.save(imgByteArr, format='JPEG') 
+                self.use_one_peek(game_id) 
                 return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')
         return ''
 
@@ -85,7 +106,8 @@ class GM:
         self.select_target_image(game_id)
         with open('data/'+game_id+'/turn_history.txt', 'w') as file: file.writelines(['turn_0'])
         with open('data/'+game_id+'/user_turn.txt', 'w') as file: file.writelines(['teller'])
-        # with open('data/'+game_id+'/start_time.txt', 'w') as file: file.writelines([str(time.time())])        
+        for i in range(1, self.num_peeks+1):
+            with open('data/'+game_id+'/peek_'+str(i)+'.txt', 'w') as file: file.writelines(['peek'])                
 
     def current_turn(self, game_id):
         try:

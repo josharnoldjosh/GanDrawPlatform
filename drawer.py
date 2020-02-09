@@ -8,6 +8,8 @@ from english import english
 from PIL import Image
 import os
 from gau_gan import GauGan
+from server_config import config
+import webbrowser
 
 # Path to downloads
 GauGan.set_download_path()
@@ -23,7 +25,11 @@ socketio = SocketIO(app)
 
 # Socket to the server that collects our data
 sio = sio_class.Client()
-sio.connect('https://language.cs.ucdavis.edu/')
+
+if config['localhost'] == True:
+    sio.connect('http://localhost:3000')
+else:
+    sio.connect('https://language.cs.ucdavis.edu/')
 
 @sio.on('update_text')
 def update_text(data):    
@@ -109,4 +115,5 @@ def index():
     
 if __name__ == '__main__':
     """ Run the app. """
-    socketio.run(app, port=5000)    
+    webbrowser.open_new_tab('http://localhost:5000')
+    socketio.run(app, port=5000)

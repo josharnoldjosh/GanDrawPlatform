@@ -4,6 +4,8 @@ import sys
 import socketio as sio_class
 from uuid import uuid4
 from english import english
+from server_config import config
+import webbrowser
 
 session_room = ""
 is_active_user = False
@@ -15,7 +17,15 @@ socketio = SocketIO(app)
 
 # Socket to server
 sio = sio_class.Client()
-sio.connect('https://language.cs.ucdavis.edu/')
+
+if config['localhost'] == True:
+    sio.connect('http://localhost:3000/')
+else:
+    sio.connect('https://language.cs.ucdavis.edu/')
+
+@sio.on('send_num_peeks_to_client')
+def send_num_peeks_to_client(data):
+    with app.test_request_context(): socketio.emit('recieved_num_peeks', data) 
 
 @sio.on('send_peek_to_client')
 def send_peek_to_client(data):
@@ -54,6 +64,10 @@ def my_event(data):
 def send_target_image_to_client(data):        
     with app.test_request_context():
         socketio.emit('recieved_target_image', data)        
+
+@socketio.on('get_num_peeks')
+def get_num_peeks_left(data):
+    sio.emit('get_num_peeks', {'room':session_room})
 
 @socketio.on('peek')
 def peek(data):
@@ -125,4 +139,5 @@ def index():
 
 if __name__ == '__main__':
     """ Run the app. """
-    socketio.run(app, port=5001)    
+    webbrowser.open_new_tab('http://localhost:5001')
+    socketio.run(app, port=5001)     

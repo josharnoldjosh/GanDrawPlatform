@@ -3,9 +3,10 @@ from flask_socketio import SocketIO, emit, join_room
 import sys
 from uuid import uuid4
 from game_manager import GM
+from server_config import config
 
 # Our game manager
-gm = GM()
+gm = GM(num_peeks=config["num_peeks"])
 
 # Init the server
 app = Flask(__name__)
@@ -21,6 +22,12 @@ def root():
     """ Send HTML from the server."""
     return "hello world"
     # return render_template('index.html')
+
+@socketio.on('get_num_peeks')
+def get_num_peeks_left(data):
+    game_id = data['room']
+    num_peeks = gm.num_peeks_left(game_id)
+    emit('send_num_peeks_to_client', {'num_peeks':num_peeks}, room=user_map[data['room']]['teller'])
 
 @socketio.on('peek')
 def peek(data):
@@ -90,7 +97,6 @@ def pair_users(data):
 def get_target_label(data):
     image_str = gm.get_target_label(data['room'])  
     emit('send_target_label_to_client', {'image':image_str}, room=user_map[data['room']]['teller'])
-
 
 if __name__ == '__main__':
     """ Run the app. """
