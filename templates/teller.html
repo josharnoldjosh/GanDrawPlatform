@@ -120,10 +120,15 @@
         });    
 
         const node = document.getElementsByClassName("textfield")[0];
-        node.addEventListener("keyup", function(event) {
+        node.addEventListener("keyup", function(event) {            
             if (event.key === "Enter") {
                 var txt = document.getElementById('textfield_input').value;
-                socket.emit('send_message', {'text':txt});
+
+                if (txt.length < 90) {
+                    socket.emit('send_message', {'text':txt});    
+                }else{
+                    alert("Your message is too long! The max length is 90. Your message is length " + String(txt.length));
+                }                
             }
         });  
 

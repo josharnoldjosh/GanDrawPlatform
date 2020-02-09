@@ -12,7 +12,6 @@ from dataclasses import dataclass
 
 """
 TO DO ASAP:
-- limit teller & drawer words they can say
 - Fix the order of messages that are displayed
 
 - TEST hypothesis
