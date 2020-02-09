@@ -3,9 +3,10 @@ from flask_socketio import SocketIO, emit, join_room
 import sys
 from uuid import uuid4
 from game_manager import GM
+from server_config import config
 
 # Our game manager
-gm = GM()
+gm = GM(num_peeks=config["num_peeks"])
 
 # Init the server
 app = Flask(__name__)
@@ -21,6 +22,12 @@ def root():
     """ Send HTML from the server."""
     return "Hello, from the server for the GanDraw task."
     # return render_template('index.html')
+
+@socketio.on('get_num_peeks')
+def get_num_peeks_left(data):
+    game_id = data['room']
+    num_peeks = gm.num_peeks_left(game_id)
+    emit('send_num_peeks_to_client', {'num_peeks':num_peeks}, room=user_map[data['room']]['teller'])
 
 @socketio.on('peek')
 def peek(data):
@@ -55,29 +62,27 @@ def send_message(data):
 
 @socketio.on('connect')
 def connect_users():
-    print("User connected to socket.")
+    pass
 
 @socketio.on('pair_users')
 def pair_users(data):
     global tellers
     global drawers
 
-    print(data["user_type"], request.sid)
-
     if data["user_type"] == "drawer": drawers.add(request.sid)
     else: tellers.add(request.sid)
 
-    print(len(drawers), len(tellers))
+    # print(len(drawers), len(tellers))
 
     # if we have enough to make a pair, we make a pair
     if len(drawers) > 0 and len(tellers) > 0:
-        print("Starting new game...")        
+        # print("Starting new game...")        
         # select target image
         # map room to requests to return info
         drawer = drawers.pop()
         teller = tellers.pop()
-        print(len(drawers), len(tellers))
-        print(drawer, teller)
+        # print(len(drawers), len(tellers))
+        # print(drawer, teller)
         new_room = str(uuid4())[:8]  
         global user_map
         user_map[new_room] = {'drawer':drawer, 'teller':teller}
@@ -92,7 +97,6 @@ def pair_users(data):
 def get_target_label(data):
     image_str = gm.get_target_label(data['room'])  
     emit('send_target_label_to_client', {'image':image_str}, room=user_map[data['room']]['teller'])
-
 
 if __name__ == '__main__':
     """ Run the app. """

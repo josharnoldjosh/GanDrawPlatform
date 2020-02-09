@@ -52,38 +52,49 @@
     var socket;
 
     $(document).ready(function() {
+
+        var num_peeks_left = 3;
+
         socket = io.connect('http://' + document.domain + ':' + location.port);
 
         document.getElementById("chat").disabled = true;
 
-        socket.on('pair_again', function(data) {
-            // console.log("redirect received!");
-            // alert("Redirect!!");
+        socket.on('recieved_num_peeks', function(data) {
+            num_peeks_left = data['num_peeks'];
+            document.getElementById('peek_button').innerHTML = 'Peek (' + String(num_peeks_left) + ')';            
+        });
+
+        socket.on('pair_again', function(data) {                    
             document.location.href="/";
         });  
 
         socket.on('recieved_peek', function(data) {
-            document.getElementById('peek').src = data['image'];
+            var result = data['image'];
+            if (result != "") {
+                document.getElementById('peek').src = result;
+                socket.emit('get_num_peeks', {});
+            }
         });
 
-        socket.on('recieved_target_image', function(data) {
-            // console.log("redirect received!");
-            // alert("Redirect!!");
+        socket.on('recieved_target_image', function(data) {                    
             document.getElementById('target_image').src = data['image'];
         });  
 
-        socket.on('recieved_target_label', function(data) {
-            // console.log("redirect received!");
-            // alert("Redirect!!");
+        socket.on('recieved_target_label', function(data) {            
             document.getElementById('target_label').src = data['image'];
         });  
 
         document.getElementById('new_game').addEventListener('mouseup', () => { 
-            socket.emit('new_game', {})    
+            socket.emit('new_game', {})                
         });
 
         document.getElementById('peek_button').addEventListener('mouseup', () => { 
-            socket.emit('peek', {})    
+            if (num_peeks_left >= 1) {
+                socket.emit('peek', {})    
+                socket.emit('get_num_peeks', {})
+            }else{
+                alert('No more peeks left.')
+            }
         });
 
         socket.on('update_text', function(text) {
@@ -92,12 +103,10 @@
         })
 
         socket.on('toggle_active', function(data) {
-            if (data['active'] == true) {
-                // alert("become active");
+            if (data['active'] == true) {                
                 document.getElementById("textfield_input").disabled = false;
                 document.getElementById("textfield_input").className = "textfield textfield_active";
-            }else{
-                // alert("deactivate");
+            }else{                
                 document.getElementById("textfield_input").disabled = true;
                 document.getElementById("textfield_input").className = 'textfield textfield_disabled';    
             }
@@ -107,13 +116,19 @@
             socket.emit('get_active_status', {})
             socket.emit('target_image', {})
             socket.emit('target_label', {})
+            socket.emit('get_num_peeks', {})
         });    
 
         const node = document.getElementsByClassName("textfield")[0];
-        node.addEventListener("keyup", function(event) {
+        node.addEventListener("keyup", function(event) {            
             if (event.key === "Enter") {
                 var txt = document.getElementById('textfield_input').value;
-                socket.emit('send_message', {'text':txt});
+
+                if (txt.length < 90) {
+                    socket.emit('send_message', {'text':txt});    
+                }else{
+                    alert("Your message is too long! The max length is 90. Your message is length " + String(txt.length));
+                }                
             }
         });  
 

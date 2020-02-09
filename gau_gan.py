@@ -2,12 +2,16 @@ from PIL import Image
 import io
 import os
 import re
+import webbrowser
 
 class GauGan:
 
     @classmethod
     def set_download_path(self):
         download_path = input("Enter you path to downloads: ").strip()
+
+        link_to_website = 'http://nvidia-research-mingyuliu.com/gaugan/'
+        webbrowser.open_new_tab(link_to_website)        
 
         if download_path == "" and os.path.exists('download_path.txt'): return
 

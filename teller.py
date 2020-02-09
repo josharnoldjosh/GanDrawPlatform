@@ -4,6 +4,8 @@ import sys
 import socketio as sio_class
 from uuid import uuid4
 from english import english
+from server_config import config
+import webbrowser
 
 session_room = ""
 is_active_user = False
@@ -15,7 +17,15 @@ socketio = SocketIO(app)
 
 # Socket to server
 sio = sio_class.Client()
-sio.connect('http://localhost:3000')
+
+if config['localhost'] == True:
+    sio.connect('http://localhost:3000/')
+else:
+    sio.connect('https://language.cs.ucdavis.edu/')
+
+@sio.on('send_num_peeks_to_client')
+def send_num_peeks_to_client(data):
+    with app.test_request_context(): socketio.emit('recieved_num_peeks', data) 
 
 @sio.on('send_peek_to_client')
 def send_peek_to_client(data):
@@ -33,27 +43,31 @@ def update_text(data):
 def become_active(data):
     global is_active_user
     if data['active'] == True:
-        print('user is becoming active')
+        # print('user is becoming active')
         is_active_user = True        
         with app.test_request_context(): socketio.emit('toggle_active', {'active':is_active_user})
     else:
-        print('user is disabled')
+        # print('user is disabled')
         is_active_user = False
         with app.test_request_context(): socketio.emit('toggle_active', {'active':is_active_user})
 
 @sio.on('paired')
 def my_event(data):
-    print("request to pair!")
+    # print("request to pair!")
     global session_room
     session_room = data['room']
     with app.test_request_context():    
         socketio.emit('redirect', {'path':'game'})
-        print('emitted signal')
+        # print('emitted signal')
 
 @sio.on('send_target_image_to_client')
 def send_target_image_to_client(data):        
     with app.test_request_context():
         socketio.emit('recieved_target_image', data)        
+
+@socketio.on('get_num_peeks')
+def get_num_peeks_left(data):
+    sio.emit('get_num_peeks', {'room':session_room})
 
 @socketio.on('peek')
 def peek(data):
@@ -88,7 +102,7 @@ def get_active_status(data):
 @socketio.on('joined')
 def connect_drawer_with_teller(data):
     global session_room   
-    print('session', session_room) 
+    # print('session', session_room) 
     if session_room != "":
         emit('redirect', {'path':'game'})
     else:
@@ -116,7 +130,7 @@ def game():
 @app.route('/')
 def index():
     global session_room    
-    print('session', session_room)
+    # print('session', session_room)
     if session_room != "":
         socketio.emit('redirect', {'path':'game'})
     else:
@@ -125,4 +139,5 @@ def index():
 
 if __name__ == '__main__':
     """ Run the app. """
-    socketio.run(app, port=5001)    
+    webbrowser.open_new_tab('http://localhost:5001')
+    socketio.run(app, port=5001)     

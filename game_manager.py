@@ -7,36 +7,57 @@ from shutil import copyfile
 import base64
 import cv2
 from add_text import *
+import re
+from dataclasses import dataclass
 
 """
 TO DO ASAP:
-- LIMIT # of peeks
-- limit teller words they can say
-- Put server on language so others can access
 - TEST hypothesis
+- Prepare target images
+- Write pipeline for computing score
 
-- minimum turns: 5
-
-- add button to end game
-- after ending game, show score and images to both teller and drawer, then allow them to reconnect
+- minimum turns: 5 // can always be told explicity to data collectors
+- add button to end game // they can always tell each other to start a new game
+- add info to tell if they disconnected
+- add continuous count of characters left so its easier to write out stuff
+- score // can be calcualted later? can manually check quality of images, as long as semantic labels are correct
+- after ending game, show score and images to both teller and drawer, then allow them to reconnect // can be added later
 
 DRAWER MUST DRAW AN IMAGE AT EVERY TURN TO THE BEST OF HIS ABILITY. Even IF HE ASKS A QUESTION FOR CLARIFICATION.
 """
 
+@dataclass
 class GM:
 
-    def __init__(self):
-        pass
+    num_peeks:int
+
+    def num_peeks_left(self, game_id):
+        peeks = [x for x in os.listdir('data/'+game_id+'/') if "peek" in x]
+        return len(peeks)
+
+    def extract_int_from_path(self, path):
+        try:
+            result = re.findall(r'\d+', path)
+            return int(result[0])
+        except:
+            return 0
+
+    def use_one_peek(self, game_id):
+        try:
+            paths = [x for x in os.listdir('data/'+game_id+'/') if "peek" in x]
+            to_del = sorted(paths, key=lambda x: self.extract_int_from_path(x), reverse=True)
+            os.remove('data/'+game_id+'/'+to_del[0])
+        except Exception as error:            
+            print(error) 
 
     def peek(self, game_id):
         for i in range(int(self.current_turn(game_id)), -1, -1):
-            path = 'data/' + game_id + '/synthetic_' + str(i) + '.jpg'
-            print(path)
-            if os.path.isfile(path):
-                print("file exists!")
+            path = 'data/' + game_id + '/synthetic_' + str(i) + '.jpg'            
+            if os.path.isfile(path):                
                 im = Image.open(path)
                 imgByteArr = io.BytesIO()
-                im.save(imgByteArr, format='JPEG')  
+                im.save(imgByteArr, format='JPEG') 
+                self.use_one_peek(game_id) 
                 return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')
         return ''
 
@@ -86,7 +107,8 @@ class GM:
         self.select_target_image(game_id)
         with open('data/'+game_id+'/turn_history.txt', 'w') as file: file.writelines(['turn_0'])
         with open('data/'+game_id+'/user_turn.txt', 'w') as file: file.writelines(['teller'])
-        # with open('data/'+game_id+'/start_time.txt', 'w') as file: file.writelines([str(time.time())])        
+        for i in range(1, self.num_peeks+1):
+            with open('data/'+game_id+'/peek_'+str(i)+'.txt', 'w') as file: file.writelines(['peek'])                
 
     def current_turn(self, game_id):
         try:
@@ -130,12 +152,25 @@ class GM:
             with open('data/'+game_id+'/turn_history.txt', 'w') as file: file.writelines([new_turn])
 
     def format_dialog(self, game_id, replace="Drawer"):
+        def try_append(paths):
+            try:
+                file_path = paths.pop()
+                with open('data/'+game_id+'/'+file_path, 'r') as file:
+                    if 'drawer' in file_path:
+                        return file.readlines()[0].replace('You', 'Drawer') + '\n'
+                    else:
+                        return file.readlines()[0].replace('You', 'Teller') + '\n'
+            except:
+                return ""
+
         dialog = ""
-        for file_path in sorted([x for x in os.listdir('data/'+game_id+'/') if 'teller' in x or 'drawer' in x], key=lambda x: x.split('_')[1]):
-            with open('data/'+game_id+'/'+file_path, 'r') as file:
-                if 'drawer' in file_path:
-                    dialog += file.readlines()[0].replace('You', 'Drawer') + '\n'
-                else:
-                    dialog += file.readlines()[0].replace('You', 'Teller') + '\n'
+
+        sorted_teller = sorted([x for x in os.listdir('data/'+game_id+'/') if 'teller' in x], key=lambda x: self.extract_int_from_path(x), reverse=True)
+        sorted_drawer = sorted([x for x in os.listdir('data/'+game_id+'/') if 'drawer' in x], key=lambda x: self.extract_int_from_path(x), reverse=True)
+
+        for i in range(0, max(len(sorted_drawer), len(sorted_teller))):
+            dialog += try_append(sorted_teller)
+            dialog += try_append(sorted_drawer)
+
         return dialog.replace(replace, 'You')
 
