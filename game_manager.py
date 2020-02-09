@@ -12,13 +12,15 @@ from dataclasses import dataclass
 
 """
 TO DO ASAP:
-- Fix the order of messages that are displayed
-
 - TEST hypothesis
+- Prepare target images
+- Write pipeline for computing score
 
 - minimum turns: 5 // can always be told explicity to data collectors
 - add button to end game // they can always tell each other to start a new game
-- score // can be calcualted lated? can manually check quality of images, as long as semantic labels are correct
+- add info to tell if they disconnected
+- add continuous count of characters left so its easier to write out stuff
+- score // can be calcualted later? can manually check quality of images, as long as semantic labels are correct
 - after ending game, show score and images to both teller and drawer, then allow them to reconnect // can be added later
 
 DRAWER MUST DRAW AN IMAGE AT EVERY TURN TO THE BEST OF HIS ABILITY. Even IF HE ASKS A QUESTION FOR CLARIFICATION.
@@ -150,12 +152,25 @@ class GM:
             with open('data/'+game_id+'/turn_history.txt', 'w') as file: file.writelines([new_turn])
 
     def format_dialog(self, game_id, replace="Drawer"):
+        def try_append(paths):
+            try:
+                file_path = paths.pop()
+                with open('data/'+game_id+'/'+file_path, 'r') as file:
+                    if 'drawer' in file_path:
+                        return file.readlines()[0].replace('You', 'Drawer') + '\n'
+                    else:
+                        return file.readlines()[0].replace('You', 'Teller') + '\n'
+            except:
+                return ""
+
         dialog = ""
-        for file_path in sorted([x for x in os.listdir('data/'+game_id+'/') if 'teller' in x or 'drawer' in x], key=lambda x: x.split('_')[1]):
-            with open('data/'+game_id+'/'+file_path, 'r') as file:
-                if 'drawer' in file_path:
-                    dialog += file.readlines()[0].replace('You', 'Drawer') + '\n'
-                else:
-                    dialog += file.readlines()[0].replace('You', 'Teller') + '\n'
+
+        sorted_teller = sorted([x for x in os.listdir('data/'+game_id+'/') if 'teller' in x], key=lambda x: self.extract_int_from_path(x), reverse=True)
+        sorted_drawer = sorted([x for x in os.listdir('data/'+game_id+'/') if 'drawer' in x], key=lambda x: self.extract_int_from_path(x), reverse=True)
+
+        for i in range(0, max(len(sorted_drawer), len(sorted_teller))):
+            dialog += try_append(sorted_teller)
+            dialog += try_append(sorted_drawer)
+
         return dialog.replace(replace, 'You')
 
