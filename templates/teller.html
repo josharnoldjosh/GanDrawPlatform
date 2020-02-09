@@ -124,10 +124,10 @@
             if (event.key === "Enter") {
                 var txt = document.getElementById('textfield_input').value;
 
-                if (txt.length < 90) {
+                if (txt.length < 130) {
                     socket.emit('send_message', {'text':txt});    
                 }else{
-                    alert("Your message is too long! The max length is 90. Your message is length " + String(txt.length));
+                    alert("Your message is too long! The max length is 130. Your message is length " + String(txt.length));
                 }                
             }
         });  
