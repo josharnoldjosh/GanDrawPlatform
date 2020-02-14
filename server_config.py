@@ -1,4 +1,4 @@
 config = {
-    'num_peeks':3,
-    'localhost':False
+    'num_peeks':2,
+    'localhost':True
 }
