@@ -23,6 +23,14 @@ def root():
     return "Hello, from the server for the GanDraw task."
     # return render_template('index.html')
 
+@socketio.on('left_game')
+def left_game(data):
+    try:
+        emit('game_over', {}, room=user_map[data['room']]['teller'])
+        emit('game_over', {}, room=user_map[data['room']]['drawer'])
+    except:
+        pass
+
 @socketio.on('get_num_peeks')
 def get_num_peeks_left(data):
     game_id = data['room']
@@ -65,24 +73,21 @@ def connect_users():
     pass
 
 @socketio.on('pair_users')
-def pair_users(data):
+def pair_users(data):    
     global tellers
     global drawers
 
     if data["user_type"] == "drawer": drawers.add(request.sid)
     else: tellers.add(request.sid)
 
-    # print(len(drawers), len(tellers))
-
     # if we have enough to make a pair, we make a pair
     if len(drawers) > 0 and len(tellers) > 0:
-        # print("Starting new game...")        
+    
         # select target image
         # map room to requests to return info
         drawer = drawers.pop()
         teller = tellers.pop()
-        # print(len(drawers), len(tellers))
-        # print(drawer, teller)
+
         new_room = str(uuid4())[:8]  
         global user_map
         user_map[new_room] = {'drawer':drawer, 'teller':teller}

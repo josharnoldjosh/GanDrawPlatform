@@ -15,17 +15,14 @@ nltk.download('punkt')
 
 
 TO DO:
-- Move new game button or add an "are you sure"
+- option for drawer to start first
 - Need an "indication" if the user has exited the room
 - maybe an alert each time to tell them to download the images
-- remove print statements from server
 
 Does user need to see the results at the end?
 
 Need to motivate them for the details... lots of money for details?
 pay per hourly, and give a bonus
-
-
 
 ------
 

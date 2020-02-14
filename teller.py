@@ -23,6 +23,12 @@ if config['localhost'] == True:
 else:
     sio.connect('https://language.cs.ucdavis.edu/')
 
+@sio.on('game_over')
+def game_over(data):
+    print("GAME OVER")
+    with app.test_request_context():
+        socketio.emit('left_game', data)
+
 @sio.on('send_num_peeks_to_client')
 def send_num_peeks_to_client(data):
     with app.test_request_context(): socketio.emit('recieved_num_peeks', data) 
@@ -85,6 +91,7 @@ def target_image(data):
 def new_game(data):
     global is_active_user
     global session_room
+    sio.emit('left_game', {'room':session_room})
     session_room = ""
     is_active_user = False
     emit('pair_again', {'path':''})

@@ -31,6 +31,12 @@ if config['localhost'] == True:
 else:
     sio.connect('https://language.cs.ucdavis.edu/')
 
+@sio.on('game_over')
+def game_over(data):
+    print("GAME OVER")
+    with app.test_request_context():
+        socketio.emit('left_game', data)
+
 @sio.on('update_text')
 def update_text(data):    
     with app.test_request_context():
@@ -57,19 +63,19 @@ def did_pair(data):
         socketio.emit('redirect', {'path':'game'})
 
 @socketio.on('new_game')
-def new_game(data):
-    GauGan.new_game()
+def new_game(data):  
     global is_active_user
-    global session_room
+    global session_room  
+    sio.emit('left_game', {'room':session_room})    
+    GauGan.new_game()    
     session_room = ""
-    is_active_user = False
-    emit('pair_again', {'path':''})
+    is_active_user = False    
 
 @socketio.on('get_active_status')
 def get_active_status(data):
     global is_active_user
     with app.test_request_context():
-        print(is_active_user, "active?")
+        # print(is_active_user, "active?")
         socketio.emit('toggle_active', {'active':is_active_user})
     global session_room    
     if session_room.strip() == "":

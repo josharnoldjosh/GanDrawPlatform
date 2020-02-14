@@ -35,7 +35,7 @@ class GauGan:
 
     @classmethod
     def new_game(self):
-        print("Starting new game...")
+        # print("Starting new game...")
         path = self.get_download_path() + "/"
         for file in os.listdir(path):
             if "gaugan_" in file: os.remove(path+file)

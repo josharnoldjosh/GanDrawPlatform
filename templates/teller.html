@@ -59,6 +59,10 @@
 
         document.getElementById("chat").disabled = true;
 
+        socket.on('left_game', function() {
+            alert("The Drawer left this game! Please click 'new game' to start a new game!");
+        });
+
         socket.on('recieved_num_peeks', function(data) {
             num_peeks_left = data['num_peeks'];
             document.getElementById('peek_button').innerHTML = 'Peek (' + String(num_peeks_left) + ')';            
@@ -84,8 +88,10 @@
             document.getElementById('target_label').src = data['image'];
         });  
 
-        document.getElementById('new_game').addEventListener('mouseup', () => { 
-            socket.emit('new_game', {})                
+        document.getElementById('new_game').addEventListener('mouseup', () => {
+            if (confirm('Are you sure you want to start a new game? This will finish your current game!')) {
+                socket.emit('new_game', {});
+            }
         });
 
         document.getElementById('peek_button').addEventListener('mouseup', () => { 
