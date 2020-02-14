@@ -66,6 +66,7 @@
         document.getElementById('new_game').addEventListener('mouseup', () => {
             if (confirm('Are you sure you want to start a new game? This will finish your current game!')) {
                 socket.emit('new_game', {});
+                document.location.href="/";
             }
         });
 
