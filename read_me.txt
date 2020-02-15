@@ -12,23 +12,15 @@ python3
 import nltk
 nltk.download('punkt')
 
-
-
 TO DO:
 - option for drawer to start first
-- Need an "indication" if the user has exited the room
-- maybe an alert each time to tell them to download the images
-
-Does user need to see the results at the end?
-
-Need to motivate them for the details... lots of money for details?
-pay per hourly, and give a bonus
-
+- installation command / requirements.txt
+- write up a document
 ------
 
 - Each turn you must draw an image
 - You get paid a base salary
-- bonus for really good image
-- negative for bad image
+- bonus for really good image?
+- negative for bad image?
 - THE GOAL IS A DETAILED IMAGE AS BEST AS POSSIBLE, so ASK ASK ASK QUESTIONS if you're not sure or for clarity to GET THAT BONUS. 
 - IF YOU DO NOT ASK QUESTIONS, NO BONUS. 

@@ -42,6 +42,11 @@ def peek(data):
     peek_image = gm.peek(data['room'])
     emit('send_peek_to_client', {'image':peek_image}, room=user_map[data['room']]['teller'])
 
+@socketio.on('get_target_image_drawer')
+def get_target_image(data):
+    target_image = gm.get_target_image(data['room'])
+    emit('send_target_image_to_client', {'image':target_image}, room=user_map[data['room']]['drawer'])
+
 @socketio.on('get_target_image')
 def get_target_image(data):
     target_image = gm.get_target_image(data['room'])

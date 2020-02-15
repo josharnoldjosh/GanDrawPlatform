@@ -10,6 +10,9 @@ class GauGan:
     def set_download_path(self):
         download_path = input("Enter you path to downloads: ").strip()
 
+        self.last_synthetic = ""
+        self.last_semantic = ""
+
         link_to_website = 'http://nvidia-research-mingyuliu.com/gaugan/'
         webbrowser.open_new_tab(link_to_website)        
 
@@ -38,17 +41,30 @@ class GauGan:
         # print("Starting new game...")
         path = self.get_download_path() + "/"
         for file in os.listdir(path):
-            if "gaugan_" in file: os.remove(path+file)
+            if "gaugan_" in file:
+                try:
+                    os.remove(path+file)
+                except:
+                    pass
+
+    @classmethod
+    def did_download_new_image(self):
+        if self.last_synthetic == self.get_latest_downloaded_image('output') \
+        or self.last_semantic == self.get_latest_downloaded_image('input'):
+            return False
+        return True
 
     @classmethod
     def synthetic(self):
         latest_image = self.get_latest_downloaded_image('output')   
+        self.last_synthetic = latest_image
         if latest_image:     
             return self.get_image_bytes(latest_image, image_format='JPEG')
 
     @classmethod
     def semantic(self):
-        latest_image = self.get_latest_downloaded_image('input')        
+        latest_image = self.get_latest_downloaded_image('input')    
+        self.last_semantic = latest_image    
         if latest_image:
             return self.get_image_bytes(latest_image)
 

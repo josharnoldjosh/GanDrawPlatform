@@ -16,7 +16,8 @@
             </div>
 
             <div style="display: flex; flex-direction: row; width: 100%; justify-content: center; align-content: center;">
-                <textarea id="chat" style="width: 500px; height: 400px; margin: 5px; font-size: 18px; font-family: monospace;"></textarea>                    
+                <textarea id="chat" style="width: 500px; height: 400px; margin: 5px; font-size: 18px; font-family: monospace;"></textarea>     
+                <img id="target_image" style="width: 0px; height: 0px; margin: 5px;">               
             </div>    
 
             <div style="display: flex; flex-direction: row; width: 100%; justify-content: center; align-content: center;">
@@ -24,7 +25,7 @@
             </div>
 
             <div style="width: 100%; display: flex; justify-content: center; padding-top: 25px;">
-                <button id="new_game" style="height: 40px; width: 130px; background-color: #3498db; text-decoration-color: white; color: white; border-radius: 7px; font-family: monospace; font-size: 16px;">New Game</button>
+                <button id="new_game" style="height: 40px; width: 130px; background-color: #3498db; text-decoration-color: white; color: white; border-radius: 7px; font-family: monospace; font-size: 16px;">Finish Game</button>
             </div>
         </div>    
   </body>
@@ -35,18 +36,40 @@
 
     var socket;
 
+    var drawer_started_new_game = false;
+
     $(document).ready(function() {
 
         document.getElementById("chat").disabled = true;
 
         socket = io.connect('http://' + document.domain + ':' + location.port);
         
-        socket.on('left_game', function() {
+        socket.on('recieved_target_image', function(data) {                    
+            document.getElementById('target_image').src = data['image'];
+            document.getElementById("target_image").style.height = "350px";
+            document.getElementById("target_image").style.width = "350px";
+            document.getElementById("chat").style.height = "0px";
+            document.getElementById("chat").style.width = "0px";
+        });  
+
+        socket.on('left_game', function() {            
             alert("The Teller left this game! Please click 'new game' to start a new game!");
+            drawer_started_new_game = true;  
+            document.getElementById('new_game').innerText = "New Game";   
+            socket.emit('target_image', {})
         });
 
         socket.on('connect', function() {
             socket.emit('get_active_status', {})            
+        });
+
+        socket.on('can_send_message', function(data) {
+            var txt = document.getElementById('textfield_input').value;
+            if (data['send'] == true) {
+                socket.emit('send_message', {'text':txt});   
+            }else{
+                alert('Please make sure you draw an image each turn to the best of your ability, then make sure to DOWNLOAD the two types of images. (The flat color image and the realistic image.');
+            }
         });
 
         const node = document.getElementsByClassName("textfield")[0];
@@ -55,18 +78,21 @@
                 var txt = document.getElementById('textfield_input').value;
     
                 if (txt.length < 200) {
-                    socket.emit('send_message', {'text':txt});    
+                    socket.emit('did_download_new_image', {}); // this will return to the "can_send_message" socket.io function above                
                 }else{
                     alert("Your message is too long! The max length is 130. Your message is length " + String(txt.length));
-                }               
-                // Update our image here
+                }                               
             }
         });
         
         document.getElementById('new_game').addEventListener('mouseup', () => {
-            if (confirm('Are you sure you want to start a new game? This will finish your current game!')) {
+            if (drawer_started_new_game == true) {
                 socket.emit('new_game', {});
-                document.location.href="/";
+                document.location.href="/";            
+            }else if (confirm('Are you sure you want to end this game?')) {
+                drawer_started_new_game = true;  
+                document.getElementById('new_game').innerText = "New Game";   
+                socket.emit('target_image', {})
             }
         });
 

@@ -31,6 +31,11 @@ if config['localhost'] == True:
 else:
     sio.connect('https://language.cs.ucdavis.edu/')
 
+@sio.on('send_target_image_to_client')
+def send_target_image_to_client(data):        
+    with app.test_request_context():
+        socketio.emit('recieved_target_image', data)  
+
 @sio.on('game_over')
 def game_over(data):
     print("GAME OVER")
@@ -61,6 +66,11 @@ def did_pair(data):
     session_room = data['room']
     with app.test_request_context():            
         socketio.emit('redirect', {'path':'game'})
+
+@socketio.on('target_image')
+def target_image(data):
+    global session_room
+    sio.emit('get_target_image_drawer', {'room':session_room})
 
 @socketio.on('new_game')
 def new_game(data):  
@@ -104,6 +114,10 @@ def send_message(data):
         sio.emit('send_message', {'text':text, 'room':session_room, 'semantic':semantic, 'synthetic':synthetic})    
     else:
         emit('bad_english', {'info':result['info']})
+
+@socketio.on('did_download_new_image')
+def downloaded_new_image(data):    
+    emit('can_send_message', {'send':GauGan.did_download_new_image()})    
 
 @app.route('/game')
 def game():    
