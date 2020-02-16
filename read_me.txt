@@ -16,6 +16,7 @@ TO DO:
 - option for drawer to start first
 - installation command / requirements.txt
 - write up a document
+- A/B test, drawer starting / inquiring
 ------
 
 - Each turn you must draw an image
