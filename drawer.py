@@ -4,7 +4,7 @@ import sys
 from api import API
 import socketio as sio_class
 from uuid import uuid4
-from english import english
+# from english import english
 from PIL import Image
 import os
 from gau_gan import GauGan
@@ -104,16 +104,16 @@ def connect_drawer_with_teller(data):
 def send_message(data):
     global session_room
     text = "You: " + data["text"] + "\n\n"
-    result = english(text)
-    if result["can_send"] == True:
-        emit('send_message_front_end', {'text':text})    
+    # result = english(text)
+    # if result["can_send"] == True:
+    emit('send_message_front_end', {'text':text})    
 
-        semantic = GauGan.semantic()
-        synthetic = GauGan.synthetic()
+    semantic = GauGan.semantic()
+    synthetic = GauGan.synthetic()
 
-        sio.emit('send_message', {'text':text, 'room':session_room, 'semantic':semantic, 'synthetic':synthetic})    
-    else:
-        emit('bad_english', {'info':result['info']})
+    sio.emit('send_message', {'text':text, 'room':session_room, 'semantic':semantic, 'synthetic':synthetic})    
+    # else:
+    #     emit('bad_english', {'info':result['info']})
 
 @socketio.on('did_download_new_image')
 def downloaded_new_image(data):    

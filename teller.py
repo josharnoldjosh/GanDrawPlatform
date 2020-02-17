@@ -3,7 +3,6 @@ from flask_socketio import SocketIO, emit
 import sys
 import socketio as sio_class
 from uuid import uuid4
-from english import english
 from server_config import config
 import webbrowser
 
@@ -119,12 +118,12 @@ def connect_drawer_with_teller(data):
 def send_message(data):
     global session_room
     text = "You: " + data["text"] + "\n\n"
-    result = english(text)
-    if result["can_send"] == True:
-        emit('send_message_front_end', {'text':text})                        
-        sio.emit('send_message', {'text':text, 'room':session_room})    
-    else:
-        emit('bad_english', {'info':result['info']})    
+    # result = english(text)
+    # if result["can_send"] == True:
+    emit('send_message_front_end', {'text':text})                        
+    sio.emit('send_message', {'text':text, 'room':session_room})    
+    # else:
+        # emit('bad_english', {'info':result['info']})    
 
 @app.route('/game')
 def game():    

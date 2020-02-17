@@ -7,27 +7,30 @@ GanDraw is a collaborative drawing game that involves dialog between a Drawer an
 
 ### Mac & Linux
 
-First open terminal & clone the repository.
-`git clone https://github.com/josharnoldjosh/GanDrawPlatform`
+1. First open terminal & clone the repository
+    `git clone https://github.com/josharnoldjosh/GanDrawPlatform`
 
-Change directory to the cloned repository:
-`cd GanDrawPlatform/`
+2. Change directory to the cloned repository:
+    `cd GanDrawPlatform/`
 
-Install the requirements:
-`pip3 install -r requirements.txt`
-
-Then, in terminal, run these commands one at a time:
-```
-python3
-import nltk
-nltk.download('punkt')
-```
-
-Everything should work!
+3. Install the requirements:
+    `pip3 install -r requirements.txt`
 
 ### Windows
 
-Currently not avaible for windows due to the *pyenchant* library.
+1. Download Anaconda: `https://www.anaconda.com/`
+
+2. Create a new environment with `python3.6`
+
+3. Download this repository as a `.zip`
+
+4. Open a terminal with your new environment from the anaconda navigator
+
+5. Type `cd GanDrawPlatform/`
+
+6. Type `pip install -r requirements.txt`
+
+7. Voila
 
 # Instructions
 
@@ -46,4 +49,3 @@ You can peek a set number of time(s) during the task at what the Drawer has draw
 At each turn, the drawer first **draws the image to the best of his ability**, and then **downloads both the semantic map (the block colored image) and the generated, realistic image.** 
 
 He nexts decides to either ask a question to get more information to draw a better image, ask for a potential clarification, or simply ask for another instruction.
-

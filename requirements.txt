@@ -4,11 +4,9 @@ Flask-SocketIO==4.2.1
 itsdangerous==1.1.0
 Jinja2==2.11.1
 MarkupSafe==1.1.1
-nltk==3.4.5
 numpy==1.18.1
 opencv-python==4.2.0.32
 Pillow==7.0.0
-pyenchant==2.0.0
 python-engineio==3.11.2
 python-socketio==4.4.0
 six==1.14.0
