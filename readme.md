@@ -60,7 +60,7 @@ At each turn, the drawer first **draws the image to the best of his ability**, a
 
 He nexts decides to either ask a question to get more information to draw a better image, ask for a potential clarification, or simply ask for another instruction.
 
-### Server - For developers only
+## Server - For developers only
 *Everyone must open server_config.py and toggle "localhost" to either true or false, depending on where the server is being run from.*
 
 After that: `python3 server.py`
