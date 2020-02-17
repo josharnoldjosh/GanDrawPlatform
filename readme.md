@@ -5,6 +5,8 @@ GanDraw is a collaborative drawing game that involves dialog between a Drawer an
 
 *Requires python3.*
 
+### Mac & Linux
+
 First open terminal & clone the repository.
 `git clone https://github.com/josharnoldjosh/GanDrawPlatform`
 
@@ -22,6 +24,10 @@ nltk.download('punkt')
 ```
 
 Everything should work!
+
+### Windows
+
+Currently not avaible for windows due to the *pyenchant* library.
 
 # Instructions
 
