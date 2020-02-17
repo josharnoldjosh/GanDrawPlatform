@@ -54,7 +54,7 @@ Now, enter your downloads path.
 
 *On Mac, its usually `/Users/username/Downloads`*
 
-*On Windows, your path to downloads is typically `C:\Users\Username\Downloads\`, or something like that*
+*On Windows, your path to downloads is typically `C:\Users\Username\Downloads`, or something like that*
 
 At each turn, the drawer first **draws the image to the best of his ability**, and then **downloads both the semantic map (the block colored image) and the generated, realistic image.** 
 
