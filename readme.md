@@ -39,6 +39,8 @@ The goal for anyone playing the game is to **collaboratively recreate a landscap
 ## Teller
 *The role of the teller is to describe the image.*
 
+`python3 teller.py`
+
 You initially give a brief description of the image. You then proceed to describe different parts of the image so that someone else can recreate the image solely from your instructions. Your goal is to help the other person, *the Drawer*, redraw the image as accurately as possible.
 
 You can peek a set number of time(s) during the task at what the Drawer has drawn so far, to provide feedback for the Drawer to improve their image.
