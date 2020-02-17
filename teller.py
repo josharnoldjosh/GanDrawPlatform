@@ -131,6 +131,7 @@ def game():
     if session_room == "":
         with app.test_request_context():
             socketio.emit('pair_again', {'path':''})
+            return render_template('connect.html')
     return render_template('teller.html')
 
 @app.route('/')

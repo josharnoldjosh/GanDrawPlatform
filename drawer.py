@@ -121,6 +121,10 @@ def downloaded_new_image(data):
 
 @app.route('/game')
 def game():    
+    global session_room
+    if session_room == "":
+        with app.test_request_context():
+            socketio.emit('pair_again', {'path':''})            
     return render_template('drawer.html')
 
 @app.route('/')

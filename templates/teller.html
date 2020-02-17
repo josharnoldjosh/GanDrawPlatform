@@ -68,10 +68,6 @@
             document.getElementById('peek_button').innerHTML = 'Peek (' + String(num_peeks_left) + ')';            
         });
 
-        socket.on('pair_again', function(data) {                    
-            document.location.href="/";
-        });  
-
         socket.on('recieved_peek', function(data) {
             var result = data['image'];
             if (result != "") {
@@ -148,6 +144,10 @@
             var text = data['text'];
             document.getElementById('textfield_input').value = "";
             document.getElementById("chat").value += text;            
+        });  
+
+        socket.on('pair_again', function(data) {                    
+            document.location.href="/";
         });                 
     });
   </script>

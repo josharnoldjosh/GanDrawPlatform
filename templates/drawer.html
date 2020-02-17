@@ -53,10 +53,10 @@
         });  
 
         socket.on('left_game', function() {            
-            alert("The Teller left this game! Please click 'new game' to start a new game!");
-            drawer_started_new_game = true;  
-            document.getElementById('new_game').innerText = "New Game";   
-            socket.emit('target_image', {})
+            alert("The Teller left this game! Please click 'Finish Game' to start a new game!");
+            // drawer_started_new_game = true;  
+            // document.getElementById('new_game').innerText = "New Game";   
+            // socket.emit('target_image', {})
         });
 
         socket.on('connect', function() {
@@ -96,8 +96,6 @@
             }
         });
 
-        socket.on('pair_again', function(data) {document.location.href="/";});  
-
         socket.on('update_text', function(text) {
             document.getElementById("chat").value = text['text'];
             document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
@@ -123,6 +121,8 @@
             document.getElementById('textfield_input').value = "";
             document.getElementById("chat").value += text;                        
         });
+
+        socket.on('pair_again', function(data) {document.location.href="/";});  
     });
   </script>
 
