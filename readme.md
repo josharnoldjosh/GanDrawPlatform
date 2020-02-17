@@ -46,6 +46,14 @@ You can peek a set number of time(s) during the task at what the Drawer has draw
 ## Drawer
 *The role of the drawer is to draw the best image they can at each turn.*
 
+`python3 drawer.py`
+
+Now, enter your downloads path.
+
+*On Mac, its usually `/Users/username/Downloads`*
+
+*On Windows, your path to downloads is typically `C:\Users\Username\Downloads\`, or something like that*
+
 At each turn, the drawer first **draws the image to the best of his ability**, and then **downloads both the semantic map (the block colored image) and the generated, realistic image.** 
 
 He nexts decides to either ask a question to get more information to draw a better image, ask for a potential clarification, or simply ask for another instruction.
