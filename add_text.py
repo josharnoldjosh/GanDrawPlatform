@@ -57,8 +57,7 @@ def PutingText2Mask(mask):
     for l in labels:
         try:
             label_name = LABEL2COLOR[l]["name"]
-            label_color = (int(LABEL2COLOR[l]["color"][0]), int(LABEL2COLOR[l]["color"][1]), int(LABEL2COLOR[l]["color"][2]))
-            print(label_color)
+            label_color = (int(LABEL2COLOR[l]["color"][0]), int(LABEL2COLOR[l]["color"][1]), int(LABEL2COLOR[l]["color"][2]))            
             cv2.putText(back_ground, label_name, (375, v_location),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2, cv2.LINE_AA)
             v_location += 35
