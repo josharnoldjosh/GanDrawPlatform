@@ -98,7 +98,8 @@ class GM:
                 break
         with open('server_data/selected/'+selected_target_image.replace('.png', '.txt').replace('.jpg', '.txt'), 'w') as file: file.writelines(['selected'])
         copyfile('server_data/landscape_target/'+selected_target_image, 'data/'+game_id+'/target_image.jpg')
-        copyfile('server_data/landscape_label/'+selected_target_image.replace('.jpg', '.png'), 'data/'+game_id+'/target_image_semantic.png')
+
+        copyfile('server_data/landscape_label/'+selected_target_image.replace('.jpg', '.png').replace('target_image', 'target_image_semantic'), 'data/'+game_id+'/target_label.png')
         return
                 
     def new_game(self, game_id):        
