@@ -1,7 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for
 from flask_socketio import SocketIO, emit
 import sys
-from api import API
 import socketio as sio_class
 from uuid import uuid4
 # from english import english
@@ -29,7 +28,7 @@ sio = sio_class.Client()
 if config['localhost'] == True:
     sio.connect('http://localhost:3000')
 else:
-    sio.connect('https://language.cs.ucdavis.edu/')
+    sio.connect(config['external_server'])
 
 @sio.on('send_target_image_to_client')
 def send_target_image_to_client(data):        

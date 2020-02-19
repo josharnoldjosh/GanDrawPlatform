@@ -20,7 +20,7 @@ sio = sio_class.Client()
 if config['localhost'] == True:
     sio.connect('http://localhost:3000/')
 else:
-    sio.connect('https://language.cs.ucdavis.edu/')
+    sio.connect(config['external_server'])
 
 @sio.on('game_over')
 def game_over(data):
