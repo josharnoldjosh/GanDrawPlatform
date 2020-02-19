@@ -54,8 +54,15 @@ Now, enter your downloads path.
 
 *On Mac, its usually `/Users/username/Downloads`*
 
-*On Windows, your path to downloads is typically `C:\Users\Username\Downloads\`, or something like that*
+*On Windows, your path to downloads is typically `C:\Users\Username\Downloads`, or something like that*
 
 At each turn, the drawer first **draws the image to the best of his ability**, and then **downloads both the semantic map (the block colored image) and the generated, realistic image.** 
 
 He nexts decides to either ask a question to get more information to draw a better image, ask for a potential clarification, or simply ask for another instruction.
+
+## Server - For developers only
+*Everyone must open server_config.py and toggle "localhost" to either true or false, depending on where the server is being run from.*
+
+After that: `python3 server.py`
+
+Users should be able to connect to your server. You may have to dig around in `drawer.py` and `teller.py` to update the correct server links.
