@@ -5,6 +5,8 @@ import socketio as sio_class
 from uuid import uuid4
 from server_config import config
 import webbrowser
+import time
+from gevent.pywsgi import WSGIServer
 
 session_room = ""
 is_active_user = False
@@ -24,7 +26,7 @@ else:
 
 @sio.on('game_over')
 def game_over(data):
-    print("GAME OVER")
+    # print("GAME OVER")
     with app.test_request_context():
         socketio.emit('left_game', data)
 
@@ -58,15 +60,17 @@ def become_active(data):
 
 @sio.on('paired')
 def my_event(data):
-    # print("request to pair!")
+    # print("Paired with a Drawer!")
     global session_room
     session_room = data['room']
-    with app.test_request_context():    
-        socketio.emit('redirect', {'path':'game'})
-        # print('emitted signal')
+    # print("Loaded session room.")
+    with app.test_request_context():
+        # print("Emitting redirect")
+        socketio.emit('redirect', {'path':'game'})  
 
 @sio.on('send_target_image_to_client')
-def send_target_image_to_client(data):        
+def send_target_image_to_client(data):  
+    print("Recieved target image. Pushing to the HTML page...")      
     with app.test_request_context():
         socketio.emit('recieved_target_image', data)        
 
@@ -80,6 +84,7 @@ def peek(data):
 
 @socketio.on('target_image')
 def target_image(data):
+    # print("Asking server for target image...")
     sio.emit('get_target_image', {'room':session_room})
 
 @socketio.on('target_label')
@@ -130,8 +135,7 @@ def game():
     global session_room
     if session_room == "":
         with app.test_request_context():
-            socketio.emit('pair_again', {'path':''})
-            return render_template('connect.html')
+            socketio.emit('pair_again', {'path':''})            
     return render_template('teller.html')
 
 @app.route('/')
@@ -139,7 +143,7 @@ def index():
     global session_room    
     # print('session', session_room)
     if session_room != "":
-        socketio.emit('redirect', {'path':'game'})
+        socketio.emit('redirect', {'path':'game'})        
     else:
         sio.emit('pair_users', {'user_type': 'teller'})
     return render_template('connect.html')
@@ -147,4 +151,6 @@ def index():
 if __name__ == '__main__':
     """ Run the app. """
     webbrowser.open_new_tab('http://localhost:5001')
-    socketio.run(app, port=5001)     
+    # socketio.run(app, port=5001)
+    http_server = WSGIServer(('', 5001), app)
+    http_server.serve_forever()     

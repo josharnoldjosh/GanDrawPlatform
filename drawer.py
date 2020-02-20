@@ -9,6 +9,7 @@ import os
 from gau_gan import GauGan
 from server_config import config
 import webbrowser
+from gevent.pywsgi import WSGIServer
 
 # Path to downloads
 GauGan.set_download_path()
@@ -139,4 +140,6 @@ def index():
 if __name__ == '__main__':
     """ Run the app. """
     webbrowser.open_new_tab('http://localhost:5000')
-    socketio.run(app, port=5000)
+    # socketio.run(app, port=5000)
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()     

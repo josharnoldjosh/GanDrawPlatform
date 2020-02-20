@@ -4,6 +4,7 @@ import sys
 from uuid import uuid4
 from game_manager import GM
 from server_config import config
+from gevent.pywsgi import WSGIServer
 
 # Our game manager
 gm = GM(num_peeks=config["num_peeks"])
@@ -48,8 +49,9 @@ def get_target_image(data):
     emit('send_target_image_to_client', {'image':target_image}, room=user_map[data['room']]['drawer'])
 
 @socketio.on('get_target_image')
-def get_target_image(data):
+def get_target_image(data):    
     target_image = gm.get_target_image(data['room'])
+    # print("Sending target image to client...")
     emit('send_target_image_to_client', {'image':target_image}, room=user_map[data['room']]['teller'])
 
 @socketio.on('send_message')
@@ -110,4 +112,6 @@ def get_target_label(data):
 
 if __name__ == '__main__':
     """ Run the app. """
-    socketio.run(app, port=3000)
+    # socketio.run(app, port=3000)
+    http_server = WSGIServer(('', 3000), app)
+    http_server.serve_forever()

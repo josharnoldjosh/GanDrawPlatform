@@ -37,8 +37,8 @@
         });          
 
         socket.on('redirect', function(data) {
-            // console.log("redirect received!");
-            // alert("Redirect!!");
+            console.log("redirect received!");
+            console.log(data['path']);            
             window.location = data['path'];
         });                
     });

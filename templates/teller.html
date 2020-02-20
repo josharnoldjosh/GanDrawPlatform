@@ -76,7 +76,8 @@
             }
         });
 
-        socket.on('recieved_target_image', function(data) {                    
+        socket.on('recieved_target_image', function(data) {            
+            console.log(data['image']);
             document.getElementById('target_image').src = data['image'];
         });  
 
@@ -116,6 +117,7 @@
         });
 
         socket.on('connect', function() {
+            console.log('Loading data...')
             socket.emit('get_active_status', {})
             socket.emit('target_image', {})
             socket.emit('target_label', {})
