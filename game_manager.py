@@ -82,10 +82,15 @@ class GM:
             return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')    
         return ''
 
-    def select_target_image(self, game_id):        
-        target_images = os.listdir('server_data/landscape_target/')
+    def select_target_image(self, game_id):                
+
         if not os.path.exists('server_data/selected/'): os.mkdir('server_data/selected/')
-        used_target_images = [x.replace('.txt', '') for x in os.listdir('server_data/selected/')]
+
+        # Load target images & used target images
+        target_images = [x for x in os.listdir('server_data/landscape_target/') if '.jpg' in x]
+        used_target_images = [x.replace('.txt', '') for x in os.listdir('server_data/selected/') if '.txt' in x]
+
+        # Iterate over to find new image
         selected_target_image = target_images[0]
         idx = 0
         while True:
@@ -93,13 +98,29 @@ class GM:
             try:
                 idx += 1
                 selected_target_image = target_images[idx]
-            except:
-                # we finished all target images
-                break
-        with open('server_data/selected/'+selected_target_image.replace('.png', '.txt').replace('.jpg', '.txt'), 'w') as file: file.writelines(['selected'])
-        with open('data/'+game_id+'/target_image_name.txt', 'w') as file: file.writelines([selected_target_image])
-        copyfile('server_data/landscape_target/'+selected_target_image, 'data/'+game_id+'/target_image.jpg')
-        copyfile('server_data/landscape_label/'+selected_target_image.replace('.jpg', '.png').replace('target_image', 'target_image_semantic'), 'data/'+game_id+'/target_label.png')        
+            except Exception as error:
+                print(error)
+
+        with open('server_data/selected/'+selected_target_image.replace('.png', '.txt').replace('.jpg', '.txt'), 'w') as file:
+            file.writelines(['selected'])
+
+        with open('data/'+game_id+'/target_image_name.txt', 'w') as file:
+            file.writelines([selected_target_image])
+
+        original_target_path = os.path.join('server_data/landscape_target/', selected_target_image)
+
+        original_label_path = os.path.join('server_data/landscape_label/', selected_target_image.replace('.jpg', '.png').replace('target_image', 'target_image_semantic'))
+        original_label_path_2 = os.path.join('server_data/landscape_label/', selected_target_image)
+
+        # Copy target image
+        copyfile(original_target_path, 'data/'+game_id+'/target_image.jpg')
+
+        # Copy semantic images
+        try:
+            copyfile(original_label_path, 'data/'+game_id+'/target_label.png')  
+            copyfile(original_label_path_2, 'data/'+game_id+'/target_label.png')       
+        except:
+            pass
         return
                 
     def new_game(self, game_id):        
